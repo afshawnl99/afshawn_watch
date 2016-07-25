@@ -11,12 +11,20 @@
 #define TFT_MOSI 11
 #define TFT_MISO 12
 #define TFT_CLK 13
-#define STATUS_X 10
-#define STATUS_Y 65
 
+
+#define BUTTON_X 50
+#define BUTTON_Y 190
+#define BUTTON_W 90
+#define BUTTON_H 40
+#define BUTTON_SPACING_X 20
+#define BUTTON_SPACING_Y 20
+#define BUTTON_TEXTSIZE 2
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
-
+char buttonlabels[3][5] = {"Send", "Clr", "End"};
+uint16_t buttoncolors[3] = {ILI9341_DARKGREEN, ILI9341_DARKGREY, ILI9341_RED};
+Adafruit_GFX_Button buttons[3];
 void setup() {
 
   
@@ -26,7 +34,7 @@ void setup() {
   tft.fillScreen(ILI9341_BLACK);
   Serial.begin(9600);
   //setSyncProvider( requestSync);  //set function to call when sync required
-  tft.setCursor(0, 0);
+  tft.setCursor(10, 0);
   tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
   tft.println("Afshawn Watch 1.0");
 
@@ -52,20 +60,37 @@ void loop(void) {
 }
 
 
-
- 
-
-
-
-
 void digitalClockDisplay() {
   // digital clock display of the time
   String time_new = String(Serial.readString());
-  tft.fillRect(STATUS_X, STATUS_Y, 240, 80, ILI9341_BLACK);
-  tft.setCursor(STATUS_X, STATUS_Y);
+  int TimeText_X = 10;
+  int TimeText_Y = 65;
+
+  tft.fillRect(TimeText_X, TimeText_Y, 300, 60, ILI9341_RED);
+  tft.setCursor(TimeText_X, TimeText_Y);
   tft.setTextColor(ILI9341_WHITE);
   tft.setTextSize(7);
   tft.print(time_new);
+
+  int DateText_X = 10;
+  int DateText_Y = 130;
+
+  tft.fillRect(DateText_X, DateText_Y, 300, 20, ILI9341_RED);
+  tft.setCursor(DateText_X, DateText_Y);
+  tft.setTextColor(ILI9341_WHITE);
+  tft.setTextSize(2);
+  tft.print("Wed, Jul 19, 2015");
+
+    // create buttons
+  for (uint8_t row=0; row<5; row++) {
+    for (uint8_t col=0; col<3; col++) {
+      buttons[col + row*3].initButton(&tft, BUTTON_X+col*(BUTTON_W+BUTTON_SPACING_X), 
+                 BUTTON_Y+row*(BUTTON_H+BUTTON_SPACING_Y),    // x, y, w, h, outline, fill, text
+                  BUTTON_W, BUTTON_H, ILI9341_WHITE, buttoncolors[col+row*3], ILI9341_WHITE,
+                  buttonlabels[col + row*3], BUTTON_TEXTSIZE); 
+      buttons[col + row*3].drawButton();
+    }
+  }
 
 
  // tft.setCursor(0, 70);
