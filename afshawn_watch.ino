@@ -16,7 +16,7 @@
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
 
 const int selectorPin = 2;     // the number of the pushbutton pin
-
+bool home_load = true;
 
 
 void setup() {
@@ -59,7 +59,9 @@ void loop() {
 
   }
   if (timeStatus()!= timeNotSet) {
-    digitalClockDisplay();  
+    if (home_load == true){
+    homeClockDisplay();  
+    }
   }
   
   delay(100);
@@ -67,13 +69,12 @@ void loop() {
 }
 
 
-void digitalClockDisplay() {
-  clearScreen();
+void homeClockDisplay() {
   if (second() == 0){
     int TimeText_X = 10;
     int TimeText_Y = 65;
-
     tft.fillRect(TimeText_X, TimeText_Y, 300, 60, ILI9341_BLACK);
+
     tft.setCursor(TimeText_X, TimeText_Y);
     tft.setTextColor(ILI9341_WHITE);
     tft.setTextSize(6);
@@ -98,7 +99,6 @@ void digitalClockDisplay() {
 
    int DateText_X = 12;
    int DateText_Y = 125;
-
    tft.fillRect(DateText_X, DateText_Y, 300, 20, ILI9341_BLACK);
    tft.setCursor(DateText_X, DateText_Y);
    tft.setTextColor(ILI9341_WHITE);
@@ -108,24 +108,37 @@ void digitalClockDisplay() {
    }
 
   }
-
-}
-
-
-void begginingOptions(){
-
-  int LSText_X = 10;
-  int LSText_Y = 190;
-  tft.fillRect(LSText_X, LSText_Y, 300, 20, ILI9341_BLACK);
-  tft.setCursor(LSText_X, LSText_Y);
+ int SSHText_X = 10;
+ int SSHText_Y = 190;
+  tft.setCursor(SSHText_X, SSHText_Y);
   tft.setTextColor(ILI9341_WHITE);
   tft.setTextSize(2);
   tft.print("> Launch SSH Client");
 
 }
 
+
+void begginingOptions(){
+  clearScreen();
+
+
+  String time_feedback;
+  
+  while (time_feedback != "stop"){
+    Serial.println("launch-serial");
+    time_feedback = Serial.readString();
+
+  }
+  Serial.println("show_home");
+
+
+  
+}
+
 void clearScreen(){
   tft.fillRect(10, 65, 300, 150, ILI9341_BLACK);
+
+
 
 
 }
@@ -133,6 +146,11 @@ void clearScreen(){
 void launchSSH(){
   clearScreen();
   Serial.println("ssh-command ls");
+  home_load = false;
+  String files = Serial.readString();
+  tft.println(files);
+
+  
 
 }
 

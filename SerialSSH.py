@@ -14,6 +14,7 @@ class SerialSSH:
 
         try:
             self.serial_port = serial.Serial('/dev/cu.usbmodem411', 9600)
+            
             self.ssh_client()
         except:
             pass
@@ -24,24 +25,26 @@ class SerialSSH:
     
     def ssh_client(self):
         serial_input = self.serial_port.readline()
-        if "ssh-command" in serial_input:
+        if "launch-serial" in serial_input:
+            self.serial_port.write("stop")
+        elif "show_home" in serial_input:
+            self.serial_port.write("T1357041600")
+        
+
+
+        elif "ssh-command" in serial_input:
             serial_input = serial_input.replace("ssh-command ", "").strip()
             print serial_input
-            cmd = [serial_input, '/Users/audatica/Documents']
-            output = subprocess.Popen( cmd, stdout=subprocess.PIPE ).communicate()[0]
-            print output.strip()
+            try:
+                cmd = [serial_input, '/Users/audatica/Documents']
+                output = subprocess.Popen( cmd, stdout=subprocess.PIPE ).communicate()[0]
+                print output.strip()
+            except:
+                pass
         self.ssh_client()
 
 
-        #self.serial_port.write("T1357041600")
-        
 
-    #with tempfile.TemporaryFile() as tempf:
-    #       proc = subprocess.Popen(['ls', '/Users/audatica/Documents'], stdout=tempf)
-    #       proc.wait()
-    #       tempf.seek(0)
-    #       ser.write(tempf.read())
-    #       print tempf.read()
     
 
 serial_class = SerialSSH()
