@@ -17,6 +17,7 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_R
 
 const int selectorPin = 2;     // the number of the pushbutton pin
 bool home_load = true;
+bool load_time = true;
 
 
 void setup() {
@@ -70,7 +71,8 @@ void loop() {
 
 
 void homeClockDisplay() {
-  if (second() == 0){
+  
+  if (second() == 0 || load_time == true){
     int TimeText_X = 10;
     int TimeText_Y = 65;
     tft.fillRect(TimeText_X, TimeText_Y, 300, 60, ILI9341_BLACK);
@@ -95,7 +97,8 @@ void homeClockDisplay() {
       delay(100);
       tft.print(time_update);
     }
-  if (hour() == 12 && minute() == 0){
+  if (hour() == 12 && minute() == 0 || load_time == true){
+   load_time = false;
 
    int DateText_X = 12;
    int DateText_Y = 125;
@@ -122,15 +125,18 @@ void begginingOptions(){
   clearScreen();
 
 
-  String time_feedback;
+  String launch_feedback;
+
   
-  while (time_feedback != "stop"){
+  while (launch_feedback != "stop"){
     Serial.println("launch-serial");
-    time_feedback = Serial.readString();
+    launch_feedback = Serial.readString();
 
   }
-  Serial.println("show_home");
 
+
+    Serial.println("show-home");
+ 
 
   
 }
@@ -147,6 +153,8 @@ void launchSSH(){
   clearScreen();
   Serial.println("ssh-command ls");
   home_load = false;
+  tft.setCursor(0, 100);
+
   String files = Serial.readString();
   tft.println(files);
 

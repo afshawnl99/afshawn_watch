@@ -2,14 +2,16 @@ import subprocess
 import tempfile
 import serial
 import sys
+import calendar
 import time
+import datetime
 import os
 import threading
 
 
 class SerialSSH:
     def __init__(self):
-        
+        self.epoch = str(calendar.timegm(datetime.datetime.now().timetuple()))
 
 
         try:
@@ -27,8 +29,10 @@ class SerialSSH:
         serial_input = self.serial_port.readline()
         if "launch-serial" in serial_input:
             self.serial_port.write("stop")
-        elif "show_home" in serial_input:
-            self.serial_port.write("T1357041600")
+        elif "show-home" in serial_input:
+            # print "T%s"%self.epoch
+            self.serial_port.write("T%s"%self.epoch)
+
         
 
 
@@ -39,6 +43,7 @@ class SerialSSH:
                 cmd = [serial_input, '/Users/audatica/Documents']
                 output = subprocess.Popen( cmd, stdout=subprocess.PIPE ).communicate()[0]
                 print output.strip()
+                self.serial_port.write(output.strip())
             except:
                 pass
         self.ssh_client()
