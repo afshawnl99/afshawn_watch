@@ -40,10 +40,10 @@ class SerialSSH:
             serial_input = serial_input.replace("ssh-command ", "").strip()
             print serial_input
             try:
-                cmd = [serial_input, '/Users/audatica/Documents']
-                output = subprocess.Popen( cmd, stdout=subprocess.PIPE ).communicate()[0]
-                print output.strip()
-                self.serial_port.write(output.strip())
+                output = os.popen(serial_input).read()
+                output_list = [y for y in (x.strip() for x in output.splitlines()) if y]
+                print output_list
+                self.serial_port.write(output)
             except:
                 pass
         self.ssh_client()

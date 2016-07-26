@@ -151,11 +151,19 @@ void clearScreen(){
 
 void launchSSH(){
   clearScreen();
-  Serial.println("ssh-command ls");
+  //echo \"${PWD##*/}\
+
   home_load = false;
-  tft.setCursor(0, 100);
+  tft.setCursor(0, 30);
+  tft.setTextColor(ILI9341_WHITE);
+  tft.setTextSize(1);
+  tft.println();
+  Serial.println("ssh-command whoami");
+
+  Serial.println("ssh-command ls");
 
   String files = Serial.readString();
+
   tft.println(files);
 
   
