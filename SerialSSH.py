@@ -2,7 +2,7 @@ import serial
 import calendar
 import datetime
 import os
-
+import ntpath
 
 
 class SerialSSH:
@@ -36,8 +36,8 @@ class SerialSSH:
             serial_input = serial_input.replace("ssh-command ", "").strip()
             print serial_input
             try:
-                output = os.popen(serial_input).read()
-                output_list = [y for y in (x.strip() for x in output.splitlines()) if y]
+                output_read = os.popen(serial_input).read()
+                output_list = [y for y in (x.strip() for x in output_read.splitlines()) if y]
                 output = ""
                 for items in output_list:
                     output = output + items + ","
@@ -47,11 +47,11 @@ class SerialSSH:
                 self.serial_port.write(output)
             except:
                 pass
-        else:
-            serial_read = self.serial_port.readline()
-            print serial_read
 
+        else:
+            print serial_input
         self.ssh_client()
+
 
 
 
