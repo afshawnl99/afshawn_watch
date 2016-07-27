@@ -1,12 +1,8 @@
-import subprocess
-import tempfile
 import serial
-import sys
 import calendar
-import time
 import datetime
 import os
-import threading
+
 
 
 class SerialSSH:
@@ -42,10 +38,19 @@ class SerialSSH:
             try:
                 output = os.popen(serial_input).read()
                 output_list = [y for y in (x.strip() for x in output.splitlines()) if y]
+                output = ""
+                for items in output_list:
+                    output = output + items + ","
+
                 print output_list
+                print output
                 self.serial_port.write(output)
             except:
                 pass
+        else:
+            serial_read = self.serial_port.readline()
+            print serial_read
+
         self.ssh_client()
 
 

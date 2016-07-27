@@ -32,7 +32,7 @@ void setup() {
   tft.setCursor(10, 0);
   tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
   tft.println("Afshawn Watch 1.0");
-  begginingOptions();
+  //begginingOptions();
   //Button for sellecting items
   pinMode(selectorPin, INPUT);
 
@@ -44,6 +44,12 @@ void setup() {
 
   
 void loop() {
+  int selectorState = digitalRead(selectorPin);
+ if (selectorState == HIGH) {
+    // turn LED on:
+    launchSSH();
+  } 
+  /*
   int selectorState = digitalRead(selectorPin);
  if (selectorState == HIGH) {
     // turn LED on:
@@ -66,6 +72,7 @@ void loop() {
   }
   
   delay(100);
+  */
  
 }
 
@@ -150,21 +157,45 @@ void clearScreen(){
 }
 
 void launchSSH(){
-  clearScreen();
-  //echo \"${PWD##*/}\
-
+  tft.fillScreen(ILI9341_BLACK);
   home_load = false;
-  tft.setCursor(0, 30);
-  tft.setTextColor(ILI9341_WHITE);
+  tft.setTextColor(ILI9341_GREEN);
   tft.setTextSize(1);
-  tft.println();
-  Serial.println("ssh-command whoami");
+  tft.setCursor(10, 10);
 
+  tft.print("~Downloads audatica$");
+
+  
+  int reset_num = 3;
+  int column = 30;
+  int row = 10;
+  tft.setCursor(row, column);
   Serial.println("ssh-command ls");
+  char file[] = "README.md,Serial.py,Time.ino,afshawn.ino,Serial.py,Time.ino,afshawn.ino";
 
-  String files = Serial.readString();
+  tft.print(strtok(file, ","));
+//  Serial.println("ssh-command whoami");
 
-  tft.println(files);
+
+
+  for(int x=1; x<20; x++){ 
+
+
+   row = row + 110;
+   char *filen = strtok(NULL, ",");
+   Serial.println(x);
+  if(x == reset_num){
+    reset_num = reset_num + 3;
+    column =  column + 10;
+    row = 10;
+  }
+   tft.setCursor(row, column);
+ 
+   tft.print(filen);
+  }
+  
+
+
 
   
 
