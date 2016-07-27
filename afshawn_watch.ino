@@ -30,7 +30,7 @@ void setup() {
   Serial.begin(9600);
   setSyncProvider( requestSync);  //set function to call when sync required
   tft.setCursor(10, 0);
-  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
+  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(2);
   tft.println("Afshawn Watch 1.0");
   begginingOptions();
   //Button for sellecting items
@@ -155,6 +155,7 @@ void clearScreen(){
 void launchSSH(){
   tft.fillScreen(ILI9341_BLACK);
   home_load = false;
+  String file_array[] = {};
   //define home
   String current_path = "/Users/audatica";
   String current_user = "ssh";
@@ -178,33 +179,33 @@ void launchSSH(){
   String file_string = Serial.readString();
   char file[3000];
   file_string.toCharArray(file, 1000);
- // char file[] = "README.md,Serial.py,Time.ino,afshawn.ino,Serial.py,Time.ino,afshawn.ino";
-
-  tft.print(strtok(file, ","));
+  char *filen = strtok(file, ",");
+  tft.print(filen);
 //  Serial.println("ssh-command whoami");
 
 
 
-  for(int x=1; x<21; x++){ 
+  for(int(x)=1; x<21; x++){ 
 
 
    row = row + 110;
-   char *filen = strtok(NULL, ",");
-   Serial.println(x);
+  if(String(filen).length() != 0){
+   file_array[x] = filen;
+   }
+
+   filen = strtok(NULL, ",");
   if(x == reset_num){
     reset_num = reset_num + 3;
     column =  column + 25;
     row = 10;
   }
    tft.setCursor(row, column);
- 
+   
    tft.print(filen);
   }
   
 
-
-
-  
-
 }
+
+
 

@@ -2,7 +2,6 @@ import serial
 import calendar
 import datetime
 import os
-import ntpath
 
 
 class SerialSSH:
