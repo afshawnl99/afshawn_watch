@@ -2,6 +2,9 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
 #include "TimeLib.h"
+#include "Timer.h"
+
+Timer t;
 
 #define TIME_HEADER  'T'   // Header tag for serial time sync message
 #define TIME_REQUEST  7    // ASCII bell character requests a time sync message 
@@ -19,7 +22,9 @@ const int selectorPin = 2;     // the number of the pushbutton pin
 bool home_load = true;
 bool load_time = true;
 int potVal;
-
+int selectorState;
+int optionState = 0;
+int current_volume = 5;
 void setup() {
 
   
@@ -32,7 +37,9 @@ void setup() {
   tft.setCursor(10, 0);
   tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(2);
   tft.println("Afshawn Watch 1.0");
+
   begginingOptions();
+
   //Button for sellecting items
   pinMode(selectorPin, INPUT);
 
@@ -46,13 +53,96 @@ void setup() {
 void loop() {
  
 
- int selectorState = digitalRead(selectorPin);
- if (selectorState == HIGH) {
-    // turn LED on:
+ selectorState = digitalRead(selectorPin);
+
+
+   if(home_load == true){
+
+   tft.setCursor(10, 190);
+   tft.setTextColor(ILI9341_GREEN);
+   tft.setTextSize(2);
+
+   if (selectorState == HIGH) {
+    if(optionState==1){
     launchSSH();
-  } 
-  potVal = analogRead(0);            // reads the value of the potentiometer (value between 0 and 1023)
-  //Serial.println(potVal);
+
+    }
+    if(optionState==2){
+    Serial.println("ssh-command sudo shutdown -h now");
+
+    }
+
+    if(optionState==3){
+    Serial.println("ssh-command sudo shutdown -r now");
+
+    }
+
+    if(optionState==4){
+    Serial.println("ssh-command sudo shutdown -s now ");
+
+    }
+
+    if(optionState==5){
+    current_volume = current_volume + 1;
+    if(current_volume>10){
+      current_volume=10;
+    }
+    Serial.println("ssh-command sudo osascript -e 'set Volume " + String(current_volume) + "'");
+
+    }
+
+    if(optionState==6){
+     current_volume = current_volume - 1;
+    if(current_volume<0){
+      current_volume=0;
+    }
+    Serial.println("ssh-command sudo osascript -e 'set Volume " + String(current_volume) + "'");
+
+    }
+   }
+   potVal = analogRead(0);
+   if(potVal<=170 && optionState!= 1){
+    optionState=1;
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Launch SSH Client");
+
+   }
+   if(potVal>=170 && potVal<=340 && optionState!= 2){
+     optionState=2;
+
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Shutdown");
+   }
+   if(potVal>=340 && potVal<=510 && optionState!= 3){
+     optionState=3;
+
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Restart");
+   }
+   if(potVal>=510 && potVal<=680 && optionState!= 4){
+     optionState=4;
+
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Sleep");
+   }
+    if(potVal>=680 && potVal<=850 && optionState!= 5){
+     optionState=5;
+
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Volume Up");
+   }
+    if(potVal>=850 && potVal<=1023 && optionState!= 6){
+     optionState=6;
+
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Volume Down");
+   }
 
   if (Serial.available() > 1) { // wait for at least two characters
     char check_header = Serial.read();
@@ -66,8 +156,18 @@ void loop() {
     homeClockDisplay();  
     }
   }
+
+
+
+   }
+ 
+
+
   
+
+
   delay(100);
+
 
  
 }
@@ -111,15 +211,11 @@ void homeClockDisplay() {
    tft.setTextSize(2);
    String time_day = String(dayShortStr(weekday())) + String(", ") + String(monthShortStr(month())) + String(" ") + String(day()) + String(", ") + String(year());
    tft.print(time_day);
+   
    }
 
   }
- int SSHText_X = 10;
- int SSHText_Y = 190;
-  tft.setCursor(SSHText_X, SSHText_Y);
-  tft.setTextColor(ILI9341_GREEN);
-  tft.setTextSize(2);
-  tft.print("> Launch SSH Client");
+
 
 }
 
@@ -153,16 +249,15 @@ void clearScreen(){
 }
 
 void launchSSH(){
-  tft.fillScreen(ILI9341_BLACK);
   home_load = false;
-  String file_array[] = {};
+  tft.fillScreen(ILI9341_BLACK);
   //define home
-  String current_path = "/Users/audatica";
+  String current_path = "~/Desktop";
   String current_user = "ssh";
 
 
 
-  String header = "~" + current_path + " " + current_user + "$";
+  String header = current_path + " " + current_user + "$";
 
   tft.setTextColor(ILI9341_GREEN);
   tft.setTextSize(1);
@@ -181,16 +276,15 @@ void launchSSH(){
   file_string.toCharArray(file, 1000);
   char *filen = strtok(file, ",");
   tft.print(filen);
-//  Serial.println("ssh-command whoami");
 
 
 
-  for(int(x)=1; x<21; x++){ 
+  for(int(x)=1; x<7; x++){ 
+  
 
 
    row = row + 110;
   if(String(filen).length() != 0){
-   file_array[x] = filen;
    }
 
    filen = strtok(NULL, ",");
@@ -199,11 +293,14 @@ void launchSSH(){
     column =  column + 25;
     row = 10;
   }
+
+  if(String(filen).length() != 0){
    tft.setCursor(row, column);
    
    tft.print(filen);
   }
-  
+  }
+
 
 }
 
