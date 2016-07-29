@@ -10,7 +10,7 @@ class SerialSSH:
 
 
         try:
-            self.serial_port = serial.Serial('/dev/cu.usbmodem411', 9600)
+            self.serial_port = serial.Serial('/dev/cu.HC-06-DevB', 9600)
             
             self.ssh_client()
         except:

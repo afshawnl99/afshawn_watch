@@ -19,10 +19,15 @@ Timer t;
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
 
 const int selectorPin = 2;     // the number of the pushbutton pin
+const int scrollPin = 3;     // the number of the pushbutton pin
+int scrollNum = 0;
 bool home_load = true;
 bool load_time = true;
 int potVal;
 int selectorState;
+int scrollState;
+int selectorVal;
+
 int optionState = 0;
 int current_volume = 5;
 void setup() {
@@ -42,6 +47,8 @@ void setup() {
 
   //Button for sellecting items
   pinMode(selectorPin, INPUT);
+  pinMode(scrollPin, INPUT);
+
 
 
   
@@ -54,6 +61,8 @@ void loop() {
  
 
  selectorState = digitalRead(selectorPin);
+ scrollState = digitalRead(scrollPin);
+
 
 
    if(home_load == true){
@@ -61,7 +70,15 @@ void loop() {
    tft.setCursor(10, 190);
    tft.setTextColor(ILI9341_GREEN);
    tft.setTextSize(2);
+   if (scrollState == HIGH) {
+    selectorVal = selectorVal + 1;
+    if(selectorVal>6){
+      
+      selectorVal = 0;
 
+   }
+   Serial.println(selectorVal);
+   }
    if (selectorState == HIGH) {
     if(optionState==1){
     launchSSH();
@@ -100,43 +117,42 @@ void loop() {
 
     }
    }
-   potVal = analogRead(0);
-   if(potVal<=170 && optionState!= 1){
+   if(selectorVal==1 && optionState!= 1){
     optionState=1;
      tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
 
      tft.print("> Launch SSH Client");
 
    }
-   if(potVal>=170 && potVal<=340 && optionState!= 2){
+   if(selectorVal==2 && optionState!= 2){
      optionState=2;
 
      tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
 
      tft.print("> Shutdown");
    }
-   if(potVal>=340 && potVal<=510 && optionState!= 3){
+   if(selectorVal==3 && optionState!= 3){
      optionState=3;
 
      tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
 
      tft.print("> Restart");
    }
-   if(potVal>=510 && potVal<=680 && optionState!= 4){
+   if(selectorVal==4 && optionState!= 4){
      optionState=4;
 
      tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
 
      tft.print("> Sleep");
    }
-    if(potVal>=680 && potVal<=850 && optionState!= 5){
+    if(selectorVal==5 && optionState!= 5){
      optionState=5;
 
      tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
 
      tft.print("> Volume Up");
    }
-    if(potVal>=850 && potVal<=1023 && optionState!= 6){
+    if(selectorVal==6 && optionState!= 6){
      optionState=6;
 
      tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
