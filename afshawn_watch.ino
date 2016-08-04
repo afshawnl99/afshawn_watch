@@ -17,8 +17,7 @@ Timer t;
 #define TFT_MISO 12
 #define TFT_CLK 13
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
-
-const int selectorPin = 2;     // the number of the pushbutton pin
+const int selectorPin = 4;     // the number of the pushbutton pin
 const int scrollPin = 3;     // the number of the pushbutton pin
 int scrollNum = 0;
 bool home_load = true;
@@ -34,9 +33,15 @@ void setup() {
 
   
   // clear the screen
+  
   tft.begin();
   tft.setRotation(3);
   tft.fillScreen(ILI9341_BLACK);
+
+  //Bluetooth power pin base
+  pinMode(7, OUTPUT);
+  digitalWrite(7, HIGH);   // turn the bluetooth on (HIGH is the voltage level)
+
   Serial.begin(9600);
   setSyncProvider( requestSync);  //set function to call when sync required
   tft.setCursor(10, 0);
@@ -58,7 +63,7 @@ void setup() {
 
   
 void loop() {
- 
+
 
  selectorState = digitalRead(selectorPin);
  scrollState = digitalRead(scrollPin);
@@ -72,7 +77,7 @@ void loop() {
    tft.setTextSize(2);
    if (scrollState == HIGH) {
     selectorVal = selectorVal + 1;
-    if(selectorVal>6){
+    if(selectorVal>8){
       
       selectorVal = 0;
 
@@ -114,6 +119,19 @@ void loop() {
       current_volume=0;
     }
     Serial.println("ssh-command sudo osascript -e 'set Volume " + String(current_volume) + "'");
+
+    }
+
+   
+    if(optionState==7){
+      digitalWrite(7, LOW);   // turn the bluetooth on (HIGH is the voltage level)
+
+    }
+
+    
+    if(optionState==8){
+    digitalWrite(7, HIGH);   // turn the bluetooth on (HIGH is the voltage level)
+
 
     }
    }
@@ -159,6 +177,22 @@ void loop() {
 
      tft.print("> Volume Down");
    }
+       if(selectorVal==7 && optionState!= 7){
+     optionState=7;
+
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Bluetooth Off");
+   }
+
+    if(selectorVal==8 && optionState!= 8){
+     optionState=8;
+
+     tft.fillRect(10, 190, 300, 20, ILI9341_BLACK);
+
+     tft.print("> Bluetooth On");
+   }
+
 
   if (Serial.available() > 1) { // wait for at least two characters
     char check_header = Serial.read();
