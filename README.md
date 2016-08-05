@@ -15,6 +15,10 @@ Arduino digital pin xx (5V) ------- # -----|4,7k|---- + ----|10k|-----# GND
                                                       |
                                                       |
                                          TFT header input yy (3.3V)
+
+
+
+
 Otherwise you can use this code with any other (ILI9340C or ILI9341) compatible LCD.
 The following prerequisite software is required.
 The Adafruit GFX Library https://github.com/adafruit/Adafruit-GFX-Library
