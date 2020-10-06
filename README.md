@@ -1,4 +1,4 @@
-# term_watch
+# termwatch
 This is a clock that hacked a PiTft to be compatible with Arduino.
 
 
