@@ -1,5 +1,6 @@
 # termwatch
-This is a watch was made from an Arduino and PiTFT display to have SSH access, control your computer, and give you the time!
+This watch was made from an Arduino and PiTFT display to have SSH access, control your computer, and give you the time!
+All CAD files and source code is attached.
 
 
 ![](https://i.imgur.com/HrY3i7Y.png)
